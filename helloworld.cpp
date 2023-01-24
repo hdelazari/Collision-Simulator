@@ -12,6 +12,7 @@ public:
 	Display *getDisplay();
 
 	void drawRect(unsigned long col, int x, int y, int width, int height);
+	void drawCircle();
 
 private:
 	Display *display_;
@@ -29,7 +30,7 @@ GameDisplay::GameDisplay()
 
 	screen_ = DefaultScreen(display_);
 
-	window_ = XCreateSimpleWindow(display_, RootWindow(display_,screen_), 0, 0, 100, 100, 1,
+	window_ = XCreateSimpleWindow(display_, RootWindow(display_,screen_), 0, 0, 1000, 1000, 1,
                              BlackPixel(display_,screen_), WhitePixel(display_,screen_));
 
 	XSelectInput(display_, window_, KeyPressMask | ExposureMask );
@@ -47,6 +48,16 @@ Display *GameDisplay::getDisplay() {
 void GameDisplay::drawRect(unsigned long col, int x, int y, int width, int height) {
 	XSetForeground(display_, DefaultGC(display_,screen_), col);
 	XFillRectangle(display_, window_, DefaultGC(display_,screen_), x,y, width, height);
+}
+
+void GameDisplay::drawCircle() {
+	long col = 0xff0000;
+	int x = 20;
+	int y = 20;
+	int width = 100;
+	int height = 100;
+	XSetForeground(display_, DefaultGC(display_,screen_), col);
+	XFillArc(display_, window_, DefaultGC(display_, screen_), x, y,width,height,0*64, 360*64);
 }
 
 class Game {
@@ -86,7 +97,8 @@ bool Game::getEvent() {
 
 void Game::handleEvent() {
 	if (event_.type == Expose) {
-		gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
+		//gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
+		gamedisplay_.drawCircle();
 	}
 }
 
