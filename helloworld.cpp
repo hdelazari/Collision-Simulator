@@ -1,25 +1,115 @@
 #include <X11/Xlib.h>
-#include <iostream>
+#include <cstdio>
+#include <stdexcept>
 
-int main() {
-  Display *d = XOpenDisplay(NULL);
-  if (d == NULL) {
-    std::cout << "Unable to open the display\n";
-  }
+namespace mygame {
 
-  int s = DefaultScreen(d);
+class GameDisplay {
+public:
+	GameDisplay();
+	~GameDisplay();
 
-  Window w = XCreateSimpleWindow(d, RootWindow(d, s), 0, 0, 100, 100, 1,
-                                 BlackPixel(d, s), WhitePixel(d, s));
+	Display *getDisplay();
 
-  XMapWindow(d, w);
+	void drawRect(unsigned long col, int x, int y, int width, int height);
 
+private:
+	Display *display_;
+	int screen_;
+	Window window_;
+};
 
-  XPending(d);
+GameDisplay::GameDisplay()
+{
+	display_ = XOpenDisplay(NULL);
+	if (display_ == NULL)
+	{
+		throw std::runtime_error("Unable to open the display");
+	}
 
+	screen_ = DefaultScreen(display_);
 
-  getchar();
+	window_ = XCreateSimpleWindow(display_, RootWindow(display_,screen_), 0, 0, 100, 100, 1,
+                             BlackPixel(display_,screen_), WhitePixel(display_,screen_));
 
-  std::cout << "Exiting!!\n";
-  return 0;
+	XSelectInput(display_, window_, KeyPressMask | ExposureMask );
+	XMapWindow(display_, window_);
 }
+
+GameDisplay::~GameDisplay()
+{
+	XCloseDisplay(display_);
+}
+
+Display *GameDisplay::getDisplay()
+{
+	return display_;
+}
+
+void GameDisplay::drawRect(unsigned long col, int x, int y, int width, int height)
+{
+	XSetForeground(display_, DefaultGC(display_,screen_), col);
+	XFillRectangle(display_, window_, DefaultGC(display_,screen_), x,y, width, height);
+}
+
+class Game {
+public:
+	Game();
+
+	void run();
+
+private:
+	GameDisplay gamedisplay_;
+	XEvent event_;
+	bool is_running_ = true;
+
+	bool getEvent();
+	void handleEvent();
+};
+
+Game::Game()
+{
+}
+
+void Game::run()
+{
+	while (is_running_)
+	{
+		if (getEvent())
+		{
+			handleEvent();
+		}
+	}
+}
+
+bool Game::getEvent()
+{
+	if (XPending(gamedisplay_.getDisplay()))
+	{
+		XNextEvent(gamedisplay_.getDisplay(), &event_);
+		printf("EVENT: %d\n", event_.type);
+		return true;
+	}
+
+	return false;
+}
+
+void Game::handleEvent()
+{
+	if (event_.type == Expose)
+	{
+		gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
+	}
+}
+
+}
+
+int main()
+{
+	mygame::Game g;
+
+	g.run();
+
+	return 0;
+}
+
