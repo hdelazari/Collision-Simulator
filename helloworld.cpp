@@ -6,109 +6,111 @@ namespace mygame {
 
 class GameDisplay {
 public:
-	GameDisplay();
-	~GameDisplay();
+  GameDisplay();
+  ~GameDisplay();
 
-	Display *getDisplay();
+  Display *getDisplay();
 
-	void drawRect(unsigned long col, int x, int y, int width, int height);
-	void drawCircle();
+  void drawRect(unsigned long col, int x, int y, int width, int height);
+  void drawCircle();
 
 private:
-	Display *display_;
-	int screen_;
-	Window window_;
+  Display *display_;
+  int screen_;
+  Window window_;
+  int ball_x, ball_y;
 };
 
-GameDisplay::GameDisplay()
-{
-	display_ = XOpenDisplay(NULL);
-	if (display_ == NULL)
-	{
-		throw std::runtime_error("Unable to open the display");
-	}
+GameDisplay::GameDisplay() {
+  ball_x = 100;
+  ball_y = 10;
 
-	screen_ = DefaultScreen(display_);
+  display_ = XOpenDisplay(NULL);
+  if (display_ == NULL) {
+    throw std::runtime_error("Unable to open the display");
+  }
 
-	window_ = XCreateSimpleWindow(display_, RootWindow(display_,screen_), 0, 0, 1000, 1000, 1,
-                             BlackPixel(display_,screen_), WhitePixel(display_,screen_));
+  screen_ = DefaultScreen(display_);
 
-	XSelectInput(display_, window_, KeyPressMask | ExposureMask );
-	XMapWindow(display_, window_);
+  window_ = XCreateSimpleWindow(display_, RootWindow(display_, screen_), 0, 0,
+                                1000, 1000, 1, BlackPixel(display_, screen_),
+                                WhitePixel(display_, screen_));
+
+  XSelectInput(display_, window_, KeyPressMask | ExposureMask);
+  XMapWindow(display_, window_);
 }
 
-GameDisplay::~GameDisplay() {
-	XCloseDisplay(display_);
-}
+GameDisplay::~GameDisplay() { XCloseDisplay(display_); }
 
-Display *GameDisplay::getDisplay() {
-	return display_;
-}
+Display *GameDisplay::getDisplay() { return display_; }
 
-void GameDisplay::drawRect(unsigned long col, int x, int y, int width, int height) {
-	XSetForeground(display_, DefaultGC(display_,screen_), col);
-	XFillRectangle(display_, window_, DefaultGC(display_,screen_), x,y, width, height);
+void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
+                           int height) {
+  XSetForeground(display_, DefaultGC(display_, screen_), col);
+  XFillRectangle(display_, window_, DefaultGC(display_, screen_), x, y, width,
+                 height);
 }
 
 void GameDisplay::drawCircle() {
-	long col = 0xff0000;
-	int x = 20;
-	int y = 20;
-	int width = 100;
-	int height = 100;
-	XSetForeground(display_, DefaultGC(display_,screen_), col);
-	XFillArc(display_, window_, DefaultGC(display_, screen_), x, y,width,height,0*64, 360*64);
+  long col = 0xff0000;
+  int x = 20;
+  int y = 20;
+  int width = 100;
+  int height = 100;
+  XSetForeground(display_, DefaultGC(display_, screen_), col);
+  XFillArc(display_, window_, DefaultGC(display_, screen_), ball_x, ball_y, width, height,
+           0 * 64, 360 * 64);
+  ball_y += 1;
 }
 
 class Game {
 public:
-	Game();
+  Game();
 
-	void run();
+  void run();
 
 private:
-	GameDisplay gamedisplay_;
-	XEvent event_;
-	bool is_running_ = true;
+  GameDisplay gamedisplay_;
+  XEvent event_;
+  bool is_running_ = true;
 
-	bool getEvent();
-	void handleEvent();
+  bool getEvent();
+  void handleEvent();
 };
 
-Game::Game(){}
+Game::Game() {}
 
 void Game::run() {
-	while (is_running_) {
-		if (getEvent()) {
-			handleEvent();
-		}
-	}
+  while (is_running_) {
+    if (getEvent()) {
+      handleEvent();
+    }
+  }
 }
 
 bool Game::getEvent() {
-	if (XPending(gamedisplay_.getDisplay())) {
-		XNextEvent(gamedisplay_.getDisplay(), &event_);
-		printf("EVENT: %d\n", event_.type);
-		return true;
-	}
+  if (XPending(gamedisplay_.getDisplay())) {
+    XNextEvent(gamedisplay_.getDisplay(), &event_);
+    printf("EVENT: %d\n", event_.type);
+    return true;
+  }
 
-	return false;
+  return false;
 }
 
 void Game::handleEvent() {
-	if (event_.type == Expose) {
-		//gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
-		gamedisplay_.drawCircle();
-	}
+  if (event_.type == Expose) {
+    // gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
+    gamedisplay_.drawCircle();
+  }
 }
 
-}
+} // namespace mygame
 
 int main() {
-	mygame::Game g;
+  mygame::Game g;
 
-	g.run();
+  g.run();
 
-	return 0;
+  return 0;
 }
-
