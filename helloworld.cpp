@@ -36,18 +36,15 @@ GameDisplay::GameDisplay()
 	XMapWindow(display_, window_);
 }
 
-GameDisplay::~GameDisplay()
-{
+GameDisplay::~GameDisplay() {
 	XCloseDisplay(display_);
 }
 
-Display *GameDisplay::getDisplay()
-{
+Display *GameDisplay::getDisplay() {
 	return display_;
 }
 
-void GameDisplay::drawRect(unsigned long col, int x, int y, int width, int height)
-{
+void GameDisplay::drawRect(unsigned long col, int x, int y, int width, int height) {
 	XSetForeground(display_, DefaultGC(display_,screen_), col);
 	XFillRectangle(display_, window_, DefaultGC(display_,screen_), x,y, width, height);
 }
@@ -67,25 +64,18 @@ private:
 	void handleEvent();
 };
 
-Game::Game()
-{
-}
+Game::Game(){}
 
-void Game::run()
-{
-	while (is_running_)
-	{
-		if (getEvent())
-		{
+void Game::run() {
+	while (is_running_) {
+		if (getEvent()) {
 			handleEvent();
 		}
 	}
 }
 
-bool Game::getEvent()
-{
-	if (XPending(gamedisplay_.getDisplay()))
-	{
+bool Game::getEvent() {
+	if (XPending(gamedisplay_.getDisplay())) {
 		XNextEvent(gamedisplay_.getDisplay(), &event_);
 		printf("EVENT: %d\n", event_.type);
 		return true;
@@ -94,18 +84,15 @@ bool Game::getEvent()
 	return false;
 }
 
-void Game::handleEvent()
-{
-	if (event_.type == Expose)
-	{
+void Game::handleEvent() {
+	if (event_.type == Expose) {
 		gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
 	}
 }
 
 }
 
-int main()
-{
+int main() {
 	mygame::Game g;
 
 	g.run();
