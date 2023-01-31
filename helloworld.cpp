@@ -4,6 +4,12 @@
 
 namespace mygame {
 
+
+struct Circle {
+    int x, y, radius;
+};    
+
+    
 class GameDisplay {
 public:
   GameDisplay();
@@ -12,7 +18,7 @@ public:
   Display *getDisplay();
 
   void drawRect(unsigned long col, int x, int y, int width, int height);
-  void drawCircle();
+  void drawCircle(Circle c);
 
 private:
   Display *display_;
@@ -51,23 +57,19 @@ void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
                  height);
 }
 
-void GameDisplay::drawCircle() {
+void GameDisplay::drawCircle(Circle c) {
   long col = 0xff0000;
-  int x = 20;
-  int y = 20;
-  int width = 100;
-  int height = 100;
+  XClearWindow(display_, window_);
   XSetForeground(display_, DefaultGC(display_, screen_), col);
-  XFillArc(display_, window_, DefaultGC(display_, screen_), ball_x, ball_y, width, height,
+  XFillArc(display_, window_, DefaultGC(display_, screen_), c.x, c.y, 2*c.radius,2*c.radius ,
            0 * 64, 360 * 64);
-  ball_y += 1;
 }
 
 class Game {
 public:
   Game();
 
-  void run();
+  void run(Circle c);
 
 private:
   GameDisplay gamedisplay_;
@@ -75,15 +77,22 @@ private:
   bool is_running_ = true;
 
   bool getEvent();
-  void handleEvent();
+  void handleEvent(Circle c);
 };
 
 Game::Game() {}
 
-void Game::run() {
+void Game::run(Circle c) {
+  int i=0;
   while (is_running_) {
+    if (i==10000){
+        handleEvent(c);
+        c.y +=1;
+        i=0;
+    }
+    i++;
     if (getEvent()) {
-      handleEvent();
+      handleEvent(c);
     }
   }
 }
@@ -98,11 +107,8 @@ bool Game::getEvent() {
   return false;
 }
 
-void Game::handleEvent() {
-  if (event_.type == Expose) {
-    // gamedisplay_.drawRect(0x6091ab, 10,10, 20,40);
-    gamedisplay_.drawCircle();
-  }
+void Game::handleEvent(Circle c) {
+    gamedisplay_.drawCircle(c);
 }
 
 } // namespace mygame
@@ -110,7 +116,9 @@ void Game::handleEvent() {
 int main() {
   mygame::Game g;
 
-  g.run();
+  mygame::Circle c = {10, 10, 50 };
+
+  g.run(c);
 
   return 0;
 }
