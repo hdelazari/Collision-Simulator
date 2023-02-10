@@ -6,7 +6,7 @@ namespace mygame {
 
 
 struct Circle {
-    int x, y, radius;
+    float x, y, x_vel, y_vel, radius;
 };    
 
     
@@ -61,7 +61,7 @@ void GameDisplay::drawCircle(Circle c) {
   long col = 0xff0000;
   XClearWindow(display_, window_);
   XSetForeground(display_, DefaultGC(display_, screen_), col);
-  XFillArc(display_, window_, DefaultGC(display_, screen_), c.x, c.y, 2*c.radius,2*c.radius ,
+  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.x), int(c.y), int(2*c.radius),int(2*c.radius) ,
            0 * 64, 360 * 64);
 }
 
@@ -84,10 +84,12 @@ Game::Game() {}
 
 void Game::run(Circle c) {
   int i=0;
+  c.y_vel=1;
   while (is_running_) {
     if (i==10000){
         handleEvent(c);
-        c.y +=1;
+        c.y_vel += 0.1;
+        c.y += c.y_vel;
         i=0;
     }
     i++;
@@ -116,7 +118,7 @@ void Game::handleEvent(Circle c) {
 int main() {
   mygame::Game g;
 
-  mygame::Circle c = {10, 10, 50 };
+  mygame::Circle c = {10, 10, 0, 0, 50 };
 
   g.run(c);
 
