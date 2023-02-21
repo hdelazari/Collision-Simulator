@@ -4,10 +4,30 @@
 
 namespace mygame {
 
+struct Point {
+    float x, y;
+};
+
+struct Vector {
+    float x, y;
+};
+
 
 struct Circle {
-    float x, y, x_vel, y_vel, radius;
-};    
+    Point position;
+    Vector velocity;
+    float radius;
+};
+
+Point addVector(Point p, Vector v) {
+    Point new_p = {p.x+v.x, p.y+v.y};
+    return new_p;
+}
+
+Vector addVec2Vec(Vector v1, Vector v2) {
+    Vector v = {v1.x+v2.x, v1.y+v2.y};
+    return v;
+}
 
     
 class GameDisplay {
@@ -61,7 +81,7 @@ void GameDisplay::drawCircle(Circle c) {
   long col = 0xff0000;
   XClearWindow(display_, window_);
   XSetForeground(display_, DefaultGC(display_, screen_), col);
-  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.x), int(c.y), int(2*c.radius),int(2*c.radius) ,
+  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x), int(c.position.y), int(2*c.radius),int(2*c.radius) ,
            0 * 64, 360 * 64);
 }
 
@@ -69,7 +89,7 @@ class Game {
 public:
   Game();
 
-  void run(Circle c);
+  void run(Circle c, Vector gravity);
 
 private:
   GameDisplay gamedisplay_;
@@ -82,14 +102,13 @@ private:
 
 Game::Game() {}
 
-void Game::run(Circle c) {
+void Game::run(Circle c, Vector gravity) {
   int i=0;
-  c.y_vel=1;
   while (is_running_) {
     if (i==10000){
         handleEvent(c);
-        c.y_vel += 0.1;
-        c.y += c.y_vel;
+        c.velocity = addVec2Vec(c.velocity, gravity);
+        c.position = addVector(c.position, c.velocity);
         i=0;
     }
     i++;
@@ -118,9 +137,10 @@ void Game::handleEvent(Circle c) {
 int main() {
   mygame::Game g;
 
-  mygame::Circle c = {10, 10, 0, 0, 50 };
+  mygame::Vector gravity = {0,0.1};
+  mygame::Circle c = {{10, 10}, {0, 0}, 50 };
 
-  g.run(c);
+  g.run(c, gravity);
 
   return 0;
 }
