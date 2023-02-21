@@ -19,6 +19,24 @@ struct Circle {
     float radius;
 };
 
+struct Bounds {
+    float x_limit;
+    float y_limit;
+};
+
+Vector updateBounds(Point p, Vector vel, Bounds b) {
+    Vector new_vel = vel;
+
+    if (p.x < 0 || p.x > b.x_limit) {
+        new_vel.x = -new_vel.x;
+    }
+
+    if (p.y < 0 || p.y > b.y_limit) {
+        new_vel.y = -new_vel.y;
+    }
+    return new_vel;
+}
+
 Point addVector(Point p, Vector v) {
     Point new_p = {p.x+v.x, p.y+v.y};
     return new_p;
@@ -44,13 +62,9 @@ private:
   Display *display_;
   int screen_;
   Window window_;
-  int ball_x, ball_y;
 };
 
 GameDisplay::GameDisplay() {
-  ball_x = 100;
-  ball_y = 10;
-
   display_ = XOpenDisplay(NULL);
   if (display_ == NULL) {
     throw std::runtime_error("Unable to open the display");
@@ -89,7 +103,7 @@ class Game {
 public:
   Game();
 
-  void run(Circle c, Vector gravity);
+  void run(Circle c, Vector gravity, Bounds b);
 
 private:
   GameDisplay gamedisplay_;
@@ -102,13 +116,14 @@ private:
 
 Game::Game() {}
 
-void Game::run(Circle c, Vector gravity) {
+void Game::run(Circle c, Vector gravity, Bounds b) {
   int i=0;
   while (is_running_) {
     if (i==10000){
         handleEvent(c);
         c.velocity = addVec2Vec(c.velocity, gravity);
         c.position = addVector(c.position, c.velocity);
+        c.velocity = updateBounds(c.position, c.velocity, b);
         i=0;
     }
     i++;
@@ -138,9 +153,10 @@ int main() {
   mygame::Game g;
 
   mygame::Vector gravity = {0,0.1};
-  mygame::Circle c = {{10, 10}, {0, 0}, 50 };
+  mygame::Circle c = {{10, 10}, {1, 0}, 50 };
+  mygame::Bounds b = {1000,1000};
 
-  g.run(c, gravity);
+  g.run(c, gravity, b);
 
   return 0;
 }
