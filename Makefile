@@ -1,2 +1,3 @@
-helloworld: helloworld.cpp
-	g++ helloworld.cpp -o helloworld
+compile-and-run:
+	cd build && make || exit 1
+	./build/guiHannah
