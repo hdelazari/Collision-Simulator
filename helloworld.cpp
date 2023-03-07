@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <cstdio>
 #include <stdexcept>
+#include <vector>
 
 namespace mygame {
 
@@ -58,6 +59,8 @@ public:
   void drawRect(unsigned long col, int x, int y, int width, int height);
   void drawCircle(Circle c);
 
+  void drawScreen(std::vector<Circle> c);
+
 private:
   Display *display_;
   int screen_;
@@ -93,17 +96,22 @@ void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
 
 void GameDisplay::drawCircle(Circle c) {
   long col = 0xff0000;
-  XClearWindow(display_, window_);
   XSetForeground(display_, DefaultGC(display_, screen_), col);
   XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x), int(c.position.y), int(2*c.radius),int(2*c.radius) ,
            0 * 64, 360 * 64);
+}
+
+void updateCircle(Circle &c, Vector gravity, Bounds b) {
+        c.velocity = addVec2Vec(c.velocity, gravity);
+        c.position = addVector(c.position, c.velocity);
+        c.velocity = updateBounds(c.position, c.velocity, b);
 }
 
 class Game {
 public:
   Game();
 
-  void run(Circle c, Vector gravity, Bounds b);
+  void run(std::vector<Circle> c, Vector gravity, Bounds b);
 
 private:
   GameDisplay gamedisplay_;
@@ -111,24 +119,23 @@ private:
   bool is_running_ = true;
 
   bool getEvent();
-  void handleEvent(Circle c);
 };
 
 Game::Game() {}
 
-void Game::run(Circle c, Vector gravity, Bounds b) {
+void Game::run(std::vector<Circle> circles, Vector gravity, Bounds b) {
   int i=0;
   while (is_running_) {
     if (i==10000){
-        handleEvent(c);
-        c.velocity = addVec2Vec(c.velocity, gravity);
-        c.position = addVector(c.position, c.velocity);
-        c.velocity = updateBounds(c.position, c.velocity, b);
+        gamedisplay_.drawScreen(circles);
+        for (Circle &c : circles) {
+            updateCircle(c, gravity, b);
+        }
         i=0;
     }
     i++;
     if (getEvent()) {
-      handleEvent(c);
+      gamedisplay_.drawScreen(circles);
     }
   }
 }
@@ -143,8 +150,11 @@ bool Game::getEvent() {
   return false;
 }
 
-void Game::handleEvent(Circle c) {
-    gamedisplay_.drawCircle(c);
+void GameDisplay::drawScreen(std::vector<Circle> circles) {
+    XClearWindow(display_, window_);
+    for (Circle c : circles) {
+        drawCircle(c);
+    }
 }
 
 } // namespace mygame
@@ -153,7 +163,10 @@ int main() {
   mygame::Game g;
 
   mygame::Vector gravity = {0,0.1};
-  mygame::Circle c = {{10, 10}, {1, 0}, 50 };
+  std::vector<mygame::Circle> c = {
+      {{10, 10}, {1, 0}, 50 },
+      {{900, 10}, {-1, 0}, 50 },
+  };
   mygame::Bounds b = {1000,1000};
 
   g.run(c, gravity, b);
