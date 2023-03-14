@@ -56,8 +56,7 @@ void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
 }
 
 void GameDisplay::drawCircle(Circle c) {
-  long col = 0xff0000;
-  XSetForeground(display_, DefaultGC(display_, screen_), col);
+  XSetForeground(display_, DefaultGC(display_, screen_), c.color);
   XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x), int(c.position.y), int(2*c.radius),int(2*c.radius) ,
            0 * 64, 360 * 64);
 }

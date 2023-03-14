@@ -13,6 +13,7 @@ struct Circle {
   Point position;
   Vector velocity;
   float radius;
+  long color;
 };
 
 struct Bounds {
