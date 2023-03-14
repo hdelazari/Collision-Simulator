@@ -3,7 +3,7 @@ project(guiHannah)
 
 find_package(X11)
 
-add_executable(guiHannah helloworld.cpp)
+add_executable(guiHannah main.cpp)
 
 target_link_libraries(guiHannah 
 	${X11_LIBRARIES}

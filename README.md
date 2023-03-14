@@ -3,5 +3,9 @@
 A project to learn some C++ and physics simulation.
 
 # Todo
-- [ ] Arbitrary objects in scene (with colision);
+- [X] Arbitrary objects in scene;
+- [ ] Refactor code (Draw function, physics function, State struct);
+- [ ] Color In Circle;
+- [ ] Random Circle Generator;
+- [ ] Colision between objects;
 - [ ] Inclined plane ();
