@@ -3,19 +3,25 @@
 #include <stdexcept>
 #include <vector>
 
-#include "shapes.cpp"
-#include "game_display.cpp"
 #include "game.cpp"
+#include "game_display.cpp"
+#include "shapes.cpp"
+#include <time.h>
+#include <cstdlib>
 
 int main() {
+  srand(time(0));
+
   Game g;
 
-  Vector gravity = {0,0.1};
-  std::vector<Circle> c = {
-      {{10, 10}, {1, 0}, 50, 0xff0000 },
-      {{900, 10}, {-1, 0}, 50, 0x00ff00 },
-  };
-  Bounds b = {1000,1000};
+  Vector gravity = {0, 0.1};
+  std::vector<Circle> c = {};
+
+  int N = 10;
+  for (int i = 0; i < N; i++) {
+	c.push_back(randomCircle());
+  }
+  Bounds b = {1000, 1000};
 
   g.run(c, gravity, b);
 
