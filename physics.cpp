@@ -16,11 +16,20 @@ Vector updateBounds(Point p, Vector vel, Bounds b) {
     return new_vel;
 }
 
+void rungeKutta(Point &p, Vector &v, Vector gravity, float time) {
+        Vector k1, k2, k3, k4;
+        k1= v+0*gravity;
+        k2= v+(time/2)*gravity;
+        k3= v+(time/2)*gravity;
+        k4= v+time*gravity;
+        p = p+(time/6)*(k1+2*k2+2*k3+k4);
+        v = k4;
+}
 
 void updateCircle(Circle &c, Vector gravity, Bounds b) {
-        c.velocity = addVec2Vec(c.velocity, gravity);
-        c.position = addVector(c.position, c.velocity);
+        rungeKutta(c.position, c.velocity, gravity, 1);
         c.velocity = updateBounds(c.position, c.velocity, b);
 }
+
 
 #endif /* PHYSICS_CPP */

@@ -9,7 +9,23 @@ struct Point {
 
 struct Vector {
   float x, y;
+
+  Vector operator + (Vector other){
+      Vector sum = {x+other.x,y+other.y};
+      return sum;
+  }
 };
+
+Vector operator * (float s, Vector v) {
+        Vector new_v = {s*v.x,s*v.y};
+        return new_v;
+}
+
+Point operator + (Point p, Vector v) {
+  Point new_p = {p.x + v.x, p.y + v.y};
+  return new_p;
+
+}
 
 struct Circle {
   Point position;
@@ -39,13 +55,4 @@ Circle randomCircle() {
   return {{x, y}, {x_vel, y_vel}, radius, color};
 }
 
-Point addVector(Point p, Vector v) {
-  Point new_p = {p.x + v.x, p.y + v.y};
-  return new_p;
-}
-
-Vector addVec2Vec(Vector v1, Vector v2) {
-  Vector v = {v1.x + v2.x, v1.y + v2.y};
-  return v;
-}
 #endif /* SHAPES_CPP */
