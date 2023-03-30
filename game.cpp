@@ -10,7 +10,7 @@ class Game {
 public:
   Game();
 
-  void run(std::vector<Circle> c, Vector gravity, Bounds b);
+  void run(WorldState ws);
 
 private:
   GameDisplay gamedisplay_;
@@ -22,19 +22,17 @@ private:
 
 Game::Game() {}
 
-void Game::run(std::vector<Circle> circles, Vector gravity, Bounds b) {
+void Game::run(WorldState ws) {
   int i = 0;
   while (is_running_) {
     if (i == 10000) {
-      gamedisplay_.drawScreen(circles);
-      for (Circle &c : circles) {
-        updateCircle(c, gravity, b);
-      }
+      gamedisplay_.drawScreen(ws.circles);
+      updateWorldState(ws);
       i = 0;
     }
     i++;
     if (getEvent()) {
-      gamedisplay_.drawScreen(circles);
+      gamedisplay_.drawScreen(ws.circles);
     }
   }
 }

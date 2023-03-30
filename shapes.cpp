@@ -2,6 +2,7 @@
 #define SHAPES_CPP
 
 #include <cstdlib>
+#include <cmath>
 
 struct Point {
   float x, y;
@@ -20,10 +21,28 @@ Vector operator*(float s, Vector v) {
   Vector new_v = {s * v.x, s * v.y};
   return new_v;
 }
+Vector operator*(Vector v, float s) { return s * v; }
+Vector operator/(Vector v, float s) { return (1/s) * v; }
 
 Point operator+(Point p, Vector v) {
   Point new_p = {p.x + v.x, p.y + v.y};
   return new_p;
+}
+
+Vector operator-(Vector a, Vector b) {
+  Vector result = {a.x - b.x, a.y - b.y};
+  return result;
+}
+
+Vector operator-(Point a, Point b) {
+  Vector result = {a.x - b.x, a.y - b.y};
+  return result;
+}
+
+float dot(Vector a, Vector b) { return a.x * b.x + a.y * b.y; }
+
+float distance(Point a, Point b) {
+  return std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2));
 }
 
 struct Circle {
