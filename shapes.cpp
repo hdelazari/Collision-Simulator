@@ -10,21 +10,20 @@ struct Point {
 struct Vector {
   float x, y;
 
-  Vector operator + (Vector other){
-      Vector sum = {x+other.x,y+other.y};
-      return sum;
+  Vector operator+(Vector other) {
+    Vector sum = {x + other.x, y + other.y};
+    return sum;
   }
 };
 
-Vector operator * (float s, Vector v) {
-        Vector new_v = {s*v.x,s*v.y};
-        return new_v;
+Vector operator*(float s, Vector v) {
+  Vector new_v = {s * v.x, s * v.y};
+  return new_v;
 }
 
-Point operator + (Point p, Vector v) {
+Point operator+(Point p, Vector v) {
   Point new_p = {p.x + v.x, p.y + v.y};
   return new_p;
-
 }
 
 struct Circle {

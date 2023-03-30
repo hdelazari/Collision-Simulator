@@ -1,10 +1,10 @@
 #ifndef GAME_CPP
 #define GAME_CPP
 
-#include <X11/Xlib.h>
-#include "shapes.cpp"
 #include "game_display.cpp"
 #include "physics.cpp"
+#include "shapes.cpp"
+#include <X11/Xlib.h>
 
 class Game {
 public:
@@ -20,18 +20,17 @@ private:
   bool getEvent();
 };
 
-
 Game::Game() {}
 
 void Game::run(std::vector<Circle> circles, Vector gravity, Bounds b) {
-  int i=0;
+  int i = 0;
   while (is_running_) {
-    if (i==10000){
-        gamedisplay_.drawScreen(circles);
-        for (Circle &c : circles) {
-            updateCircle(c, gravity, b);
-        }
-        i=0;
+    if (i == 10000) {
+      gamedisplay_.drawScreen(circles);
+      for (Circle &c : circles) {
+        updateCircle(c, gravity, b);
+      }
+      i = 0;
     }
     i++;
     if (getEvent()) {

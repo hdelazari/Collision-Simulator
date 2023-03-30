@@ -2,8 +2,8 @@
 #define GAME_DISPLAY
 
 #include <X11/Xlib.h>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 #include "shapes.cpp"
 
@@ -41,12 +41,9 @@ GameDisplay::GameDisplay() {
   XMapWindow(display_, window_);
 }
 
-
 GameDisplay::~GameDisplay() { XCloseDisplay(display_); }
 
-
 Display *GameDisplay::getDisplay() { return display_; }
-
 
 void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
                            int height) {
@@ -57,15 +54,16 @@ void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
 
 void GameDisplay::drawCircle(Circle c) {
   XSetForeground(display_, DefaultGC(display_, screen_), c.color);
-  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x), int(c.position.y), int(2*c.radius),int(2*c.radius) ,
-           0 * 64, 360 * 64);
+  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x),
+           int(c.position.y), int(2 * c.radius), int(2 * c.radius), 0 * 64,
+           360 * 64);
 }
 
 void GameDisplay::drawScreen(std::vector<Circle> circles) {
-    XClearWindow(display_, window_);
-    for (Circle c : circles) {
-        drawCircle(c);
-    }
+  XClearWindow(display_, window_);
+  for (Circle c : circles) {
+    drawCircle(c);
+  }
 }
 
 #endif /* GAME_DISPLAY */

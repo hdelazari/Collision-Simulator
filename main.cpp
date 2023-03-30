@@ -6,8 +6,8 @@
 #include "game.cpp"
 #include "game_display.cpp"
 #include "shapes.cpp"
-#include <time.h>
 #include <cstdlib>
+#include <time.h>
 
 int main() {
   srand(time(0));
@@ -19,7 +19,7 @@ int main() {
 
   int N = 10;
   for (int i = 0; i < N; i++) {
-	c.push_back(randomCircle());
+    c.push_back(randomCircle());
   }
   Bounds b = {1000, 1000};
 
