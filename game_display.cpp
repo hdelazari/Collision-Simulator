@@ -16,8 +16,8 @@ public:
 
   void drawRect(unsigned long col, int x, int y, int width, int height);
   void drawCircle(Circle c);
-
-  void drawScreen(std::vector<Circle> c);
+  void drawBounds(Bounds b);
+  void drawScreen(WorldState ws);
 
 private:
   Display *display_;
@@ -54,14 +54,20 @@ void GameDisplay::drawRect(unsigned long col, int x, int y, int width,
 
 void GameDisplay::drawCircle(Circle c) {
   XSetForeground(display_, DefaultGC(display_, screen_), c.color);
-  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x),
-           int(c.position.y), int(2 * c.radius), int(2 * c.radius), 0 * 64,
+  XFillArc(display_, window_, DefaultGC(display_, screen_), int(c.position.x-c.radius),
+           int(c.position.y-c.radius), int(2 * c.radius), int(2 * c.radius), 0 * 64,
            360 * 64);
 }
 
-void GameDisplay::drawScreen(std::vector<Circle> circles) {
+void GameDisplay::drawBounds(Bounds b) {
+  XSetForeground(display_, DefaultGC(display_, screen_), 0x000000);
+  XDrawRectangle(display_, window_, DefaultGC(display_,screen_), 0, 0, b.x_limit, b.y_limit);
+}
+
+void GameDisplay::drawScreen(WorldState ws) {
   XClearWindow(display_, window_);
-  for (Circle c : circles) {
+  drawBounds(ws.bounds);
+  for (Circle c : ws.circles) {
     drawCircle(c);
   }
 }

@@ -1,8 +1,11 @@
 #ifndef SHAPES_CPP
 #define SHAPES_CPP
 
+#include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <vector>
+
 
 struct Point {
   float x, y;
@@ -57,6 +60,12 @@ struct Bounds {
   float y_limit;
 };
 
+struct WorldState {
+  std::vector<Circle> circles;
+  Bounds bounds;
+  Vector gravity;
+};
+
 Circle randomCircle() {
   float x = rand() % 1000;
   float y = rand() % 1000;
@@ -71,6 +80,10 @@ Circle randomCircle() {
   long color = (red << 16) + (green << 8) + blue;
 
   return {{x, y}, {x_vel, y_vel}, radius, color};
+}
+
+void printCircle(Circle c) {
+  printf("Position {%f,%f}\nVelocity {%f,%f}\n", c.position.x, c.position.y, c.velocity.x, c.velocity.y);
 }
 
 #endif /* SHAPES_CPP */

@@ -25,14 +25,14 @@ Game::Game() {}
 void Game::run(WorldState ws) {
   int i = 0;
   while (is_running_) {
-    if (i == 10000) {
-      gamedisplay_.drawScreen(ws.circles);
+    if (i == 100000) {
+      gamedisplay_.drawScreen(ws);
       updateWorldState(ws);
       i = 0;
     }
     i++;
     if (getEvent()) {
-      gamedisplay_.drawScreen(ws.circles);
+      gamedisplay_.drawScreen(ws);
     }
   }
 }

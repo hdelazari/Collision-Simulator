@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <time.h>
 
+
 int main() {
   srand(time(0));
 
@@ -18,7 +19,7 @@ int main() {
   ws.gravity = {0, 0.1};
   ws.circles = {};
 
-  int N = 10;
+  int N = 1;
   for (int i = 0; i < N; i++) {
     ws.circles.push_back(randomCircle());
   }

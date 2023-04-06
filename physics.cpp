@@ -5,12 +5,6 @@
 #include <cstdlib>
 #include <vector>
 
-struct WorldState {
-  std::vector<Circle> circles;
-  Bounds bounds;
-  Vector gravity;
-};
-
 void updateBounds(Circle &circle, Bounds b) {
   // Check if the circle is out of bounds along the x-axis
   if (circle.position.x - circle.radius < 0) {
