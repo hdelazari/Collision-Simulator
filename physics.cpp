@@ -5,28 +5,37 @@
 #include <cstdlib>
 #include <vector>
 
-void updateBounds(Circle &circle, Bounds b) {
+void updateBounds(Circle &circle, Bounds b, Vector gravity) {
   // Check if the circle is out of bounds along the x-axis
   if (circle.position.x - circle.radius < 0) {
     float extra_distance = (circle.radius - circle.position.x);
     circle.velocity.x = -circle.velocity.x;
-    circle.position.x = extra_distance;
+    //circle.position.x = circle.radius;
+    circle.position.x += 2*extra_distance;
+    //circle.position.x = extra_distance;
   } else if (circle.position.x + circle.radius > b.x_limit) {
     float extra_distance = (circle.radius + circle.position.x - b.x_limit);
-    // circle.position.x = b.x_limit - circle.radius;
     circle.velocity.x = -circle.velocity.x;
-    circle.position.x = b.x_limit - extra_distance;
+    //circle.position.x = b.x_limit - circle.radius;
+    circle.position.x -= 2*extra_distance;
+    // circle.position.x = b.x_limit - extra_distance;
   }
 
   // Check if the circle is out of bounds along the y-axis
   if (circle.position.y - circle.radius < 0) {
     float extra_distance = (circle.radius - circle.position.y);
-    circle.velocity.y = -circle.velocity.y;
-    circle.position.y = extra_distance;
+    printf("Extra time %f\n", extra_distance/circle.velocity.y);
+    circle.velocity.y = -circle.velocity.y-2*gravity.y*extra_distance/circle.velocity.y;
+    //circle.position.y = circle.radius;
+    circle.position.y += 2*extra_distance;
+    //circle.position.y = extra_distance;
   } else if (circle.position.y + circle.radius > b.y_limit) {
     float extra_distance = (circle.radius + circle.position.y - b.y_limit);
-    circle.velocity.y = -circle.velocity.y;
-    circle.position.y = b.y_limit - extra_distance;
+    printf("Extra time: %f\n", extra_distance/circle.velocity.y);
+    circle.velocity.y = -circle.velocity.y+2*gravity.y*extra_distance/circle.velocity.y;
+    //circle.position.y = b.y_limit - circle.radius;
+    circle.position.y -= 2*extra_distance;
+    //circle.position.y = b.y_limit - extra_distance;
   }
 }
 
@@ -42,7 +51,7 @@ void rungeKutta(Point &p, Vector &v, Vector gravity, float time) {
 
 void updateCircle(Circle &c, Vector gravity, Bounds b) {
   rungeKutta(c.position, c.velocity, gravity, 1);
-  updateBounds(c, b);
+  updateBounds(c, b,gravity);
 }
 
 void collide(Circle &circle1, Circle &circle2) {

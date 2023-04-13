@@ -24,8 +24,14 @@ Game::Game() {}
 
 void Game::run(WorldState ws) {
   int i = 0;
+  float E;
   while (is_running_) {
-    if (i == 100000) {
+    if (i == 10000) {
+      for (Circle c : ws.circles) {
+        E = -ws.gravity.y*c.position.y+dot(c.velocity,c.velocity)/2;
+        printf("%f\t", E);
+      }
+      printf("\n");
       gamedisplay_.drawScreen(ws);
       updateWorldState(ws);
       i = 0;

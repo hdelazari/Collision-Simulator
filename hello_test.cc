@@ -18,14 +18,14 @@ TEST(Blah, BasicAssertions) {
       Circle expected;
   } tests[] = {
       {
-          {{0, 100}, {-1, 0}, 1, 0},
+          {{0.4, 100}, {-1, 0}, 1, 0},
           {1000, 1000},
-          {{1, 100}, {1, 0}, 1, 0},
+          {{1.6, 100}, {1, 0}, 1, 0},
       }
   };
   
   for (auto test : tests) {
-    updateBounds(test.c,test.b);
+    updateBounds(test.c,test.b,{0,0.1});
     if (!compareCircle(test.c,test.expected)) {
       printCircle(test.c);
       printCircle(test.expected);

@@ -19,7 +19,9 @@ int main() {
   ws.gravity = {0, 0.1};
   ws.circles = {};
 
-  int N = 1;
+  ws.circles.push_back({{30,30},{0,5},10,0x0000ff});
+
+  int N = 0;
   for (int i = 0; i < N; i++) {
     ws.circles.push_back(randomCircle());
   }
