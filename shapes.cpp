@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <chrono>
 
 
 struct Point {
@@ -64,6 +65,16 @@ struct WorldState {
   std::vector<Circle> circles;
   Bounds bounds;
   Vector gravity;
+  std::chrono::milliseconds time;   
+
+  WorldState() {
+    circles = {};
+    bounds = {1000, 1000};
+    gravity = {0, 0.1};
+    time = std::chrono::duration_cast< std::chrono::milliseconds >(
+      std::chrono::system_clock::now().time_since_epoch()
+    );
+  }
 };
 
 Circle randomCircle() {

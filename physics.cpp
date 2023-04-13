@@ -2,44 +2,68 @@
 #define PHYSICS_CPP
 
 #include "shapes.cpp"
+#include <chrono>
 #include <cstdlib>
 #include <vector>
 
+using namespace std::chrono;
+
+double kineticEnergy(Circle c) {
+  return dot(c.velocity, c.velocity) / 2;
+}
+
+double potentialEnergy(Circle c, Vector gravity) {
+  return -gravity.y * c.position.y;
+}
+
+double energyCirle(Circle c, Vector gravity) {
+  return kineticEnergy(c) + potentialEnergy(c, gravity);
+}
+
+
 void updateBounds(Circle &circle, Bounds b, Vector gravity) {
+  double energy = energyCirle(circle, gravity);
   // Check if the circle is out of bounds along the x-axis
   if (circle.position.x - circle.radius < 0) {
     float extra_distance = (circle.radius - circle.position.x);
     circle.velocity.x = -circle.velocity.x;
-    //circle.position.x = circle.radius;
-    circle.position.x += 2*extra_distance;
-    //circle.position.x = extra_distance;
+    circle.position.x += 2 * extra_distance;
   } else if (circle.position.x + circle.radius > b.x_limit) {
     float extra_distance = (circle.radius + circle.position.x - b.x_limit);
     circle.velocity.x = -circle.velocity.x;
-    //circle.position.x = b.x_limit - circle.radius;
-    circle.position.x -= 2*extra_distance;
-    // circle.position.x = b.x_limit - extra_distance;
+    circle.position.x -= 2 * extra_distance;
   }
 
   // Check if the circle is out of bounds along the y-axis
   if (circle.position.y - circle.radius < 0) {
     float extra_distance = (circle.radius - circle.position.y);
-    printf("Extra time %f\n", extra_distance/circle.velocity.y);
-    circle.velocity.y = -circle.velocity.y-2*gravity.y*extra_distance/circle.velocity.y;
-    //circle.position.y = circle.radius;
-    circle.position.y += 2*extra_distance;
-    //circle.position.y = extra_distance;
+    //printf("Extra time %f\n", extra_distance / circle.velocity.y);
+    circle.velocity.y =
+        -circle.velocity.y - 2 * gravity.y * extra_distance / circle.velocity.y;
+    circle.position.y += 2 * extra_distance;
   } else if (circle.position.y + circle.radius > b.y_limit) {
     float extra_distance = (circle.radius + circle.position.y - b.y_limit);
-    printf("Extra time: %f\n", extra_distance/circle.velocity.y);
-    circle.velocity.y = -circle.velocity.y+2*gravity.y*extra_distance/circle.velocity.y;
-    //circle.position.y = b.y_limit - circle.radius;
-    circle.position.y -= 2*extra_distance;
-    //circle.position.y = b.y_limit - extra_distance;
+    //printf("Extra time: %f\n", extra_distance / circle.velocity.y);
+    circle.velocity.y =
+        -circle.velocity.y + 2 * gravity.y * extra_distance / circle.velocity.y;
+    circle.position.y -= 2 * extra_distance;
   }
+
+  // Update the velocity to conserve energy
+  // E1 = K1 + U1
+  // E2 = K2 + U2
+  // E1 = K2*x + U2
+  // E1 - U2 = K2*x
+  // x = (E1 - U2) / K2
+  double kinetic_energy_correction_ration = (energy - potentialEnergy(circle, gravity)) / kineticEnergy(circle);
+  circle.velocity = circle.velocity * std::sqrt(kinetic_energy_correction_ration);
+
+
+
 }
 
-void rungeKutta(Point &p, Vector &v, Vector gravity, float time) {
+void rungeKutta(Point &p, Vector &v, Vector gravity, milliseconds dt) {
+  float time = dt.count() / 100000.0;
   Vector k1, k2, k3, k4;
   k1 = v + 0 * gravity;
   k2 = v + (time / 2) * gravity;
@@ -49,9 +73,9 @@ void rungeKutta(Point &p, Vector &v, Vector gravity, float time) {
   v = k4;
 }
 
-void updateCircle(Circle &c, Vector gravity, Bounds b) {
-  rungeKutta(c.position, c.velocity, gravity, 1);
-  updateBounds(c, b,gravity);
+void updateCircle(Circle &c, Vector gravity, Bounds b, milliseconds dt) {
+  rungeKutta(c.position, c.velocity, gravity, dt);
+  updateBounds(c, b, gravity);
 }
 
 void collide(Circle &circle1, Circle &circle2) {
@@ -83,8 +107,12 @@ void collide(Circle &circle1, Circle &circle2) {
 }
 
 void updateWorldState(WorldState &ws) {
+  milliseconds time =
+      duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+  milliseconds time_elapsed = time - ws.time;
+
   for (int i = 0; i < ws.circles.size(); i++) {
-    updateCircle(ws.circles[i], ws.gravity, ws.bounds);
+    updateCircle(ws.circles[i], ws.gravity, ws.bounds, time_elapsed);
   }
 
   for (int i = 0; i < ws.circles.size(); i++) {

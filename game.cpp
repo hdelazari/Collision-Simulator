@@ -29,7 +29,7 @@ void Game::run(WorldState ws) {
     if (i == 10000) {
       for (Circle c : ws.circles) {
         E = -ws.gravity.y*c.position.y+dot(c.velocity,c.velocity)/2;
-        printf("%f\t", E);
+      printf("%f\t", E);
       }
       printf("\n");
       gamedisplay_.drawScreen(ws);

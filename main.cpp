@@ -9,17 +9,16 @@
 #include "physics.cpp"
 #include <cstdlib>
 #include <time.h>
+#include <chrono>
 
 
 int main() {
   srand(time(0));
 
   Game g;
-  WorldState ws = {};
-  ws.gravity = {0, 0.1};
-  ws.circles = {};
+  WorldState ws = WorldState();
 
-  ws.circles.push_back({{30,30},{0,5},10,0x0000ff});
+  ws.circles.push_back({{30,30},{15,5},10,0x0000ff});
 
   int N = 0;
   for (int i = 0; i < N; i++) {
